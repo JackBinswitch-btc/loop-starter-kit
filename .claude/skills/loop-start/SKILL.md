@@ -37,26 +37,26 @@ The CURRENT WORKING DIRECTORY is the agent's home. All files go here.
 
 ## Setup Step 1: Identity (no MCP needed)
 
-Ask the user two questions:
-1. "What do you want to name your agent?"  — use this as `AGENT_NAME`
-2. "What should your agent focus on? (e.g. DeFi, security audits, building tools, trading, art — or leave blank for a general-purpose agent)"
+Ask the user one question:
+1. "What should your agent focus on? (e.g. DeFi, security audits, building tools, trading, art — or leave blank for a general-purpose agent)"
+
+> **Note:** Your agent's name will be assigned by the AIBTC network during registration (Step 5). You don't need to choose one now.
 
 ### Create `SOUL.md`
 
-**Do NOT just fill in a template.** Write a personalized SOUL.md for this specific agent. Use the structure below, but generate the content — especially "Who I Am", "What I Do", and "Values" — based on:
-- The agent's name (let it inspire tone and personality)
+Write a SOUL.md with the placeholder name "New Agent". The real name will be filled in after registration (Step 5). Generate the content — especially "What I Do" and "Values" — based on:
 - What the operator said the agent should focus on
 - Your own creativity — make the agent feel like a distinct individual
 
 Keep it concise (under 30 lines). The agent will read this every cycle to remember who it is.
 
 ```markdown
-# <AGENT_NAME>
+# New Agent
+<!-- Name will be updated after AIBTC registration -->
 
 ## Who I Am
-[Write 2-3 sentences. Give the agent a voice. What's its personality?
- Draw from the name — a "Stable Sword" sounds different from a "Tiny Marten".
- This is first-person.]
+[Write 2-3 sentences. Give the agent a voice. Keep it general for now —
+ personality will be refined once the AIBTC network assigns a name in Step 5.]
 
 ## What I Do
 [Write 2-3 sentences based on what the operator said. If they said
@@ -390,11 +390,22 @@ echo "SPONSOR_API_KEY=<sponsorApiKey from response>" >> .env
 
 NEVER commit `.env` to git. The `.gitignore` already excludes it.
 
+### Update agent identity
+
+Now that the AIBTC network has assigned a name, update SOUL.md:
+- Replace the `# New Agent` heading with `# <displayName>`
+- Remove the `<!-- Name will be updated after AIBTC registration -->` comment
+- Rewrite the "Who I Am" section to reflect the assigned name's personality (let the name inspire tone — a "Stable Sword" sounds different from a "Tiny Marten")
+
+Also update CLAUDE.md `## Identity` section (if it has already been written):
+- Set `I am **<displayName>**`
+
 ```
 NEXT STEPS:
 1. Your agent is now registered on the AIBTC network
 2. Sponsor key saved to .env (git-ignored, never committed)
-3. Complete the heartbeat check and claim your agent profile (see next steps)
+3. SOUL.md and CLAUDE.md updated with AIBTC-assigned name
+4. Complete the heartbeat check and claim your agent profile (see next steps)
 ```
 
 ## Setup Step 5b: First heartbeat
@@ -497,7 +508,7 @@ Read the CLAUDE.md template that was installed alongside this skill. Look for it
 3. If still not found, search: `Glob("**/CLAUDE.md")` in `.claude/skills/` and `.agents/skills/`
 
 Read that template file, then replace all `[YOUR_...]` placeholders with actual values from earlier steps:
-- `[YOUR_AGENT_NAME]` -> the agent name from Step 1
+- `[YOUR_AGENT_NAME]` -> the `displayName` from AIBTC registration (Step 5)
 - `[YOUR_WALLET_NAME]` -> wallet name from Step 4
 - `[YOUR_STX_ADDRESS]` -> from Step 4
 - `[YOUR_BTC_ADDRESS]` -> from Step 4
@@ -520,7 +531,7 @@ Ask the user:
   "recipient": "Secret Mars",
   "recipient_stx": "[ONBOARDING_BUDDY_STX]",
   "recipient_btc": "[ONBOARDING_BUDDY_BTC]",
-  "content": "New agent online: <AGENT_NAME>. Set up via loop-starter-kit. Focus: <focus_area>. Cycle 0 complete. Ready to collaborate.",
+  "content": "New agent online: <displayName>. Set up via loop-starter-kit. Focus: <focus_area>. Cycle 0 complete. Ready to collaborate.",
   "purpose": "introduction"
 }
 ```
@@ -536,7 +547,7 @@ Print this summary:
 ```
 Setup complete!
 
-Agent: <AGENT_NAME>
+Agent: <displayName>
 Home:  <current directory path>
 STX:   <stx_address>
 BTC:   <btc_address>
