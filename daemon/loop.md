@@ -234,7 +234,7 @@ Any phase fails → log it, increment circuit breaker, continue to next phase.
 
 ## Reply Mechanics
 
-- Max 500 chars total signature string. Safe reply ~418 chars.
+- Max 500 chars total signature string. Safe reply = 500 - 16 - len(messageId) chars.
 - Sign: `"Inbox Reply | {messageId} | {reply_text}"`
 - Use `-d @file` NOT `-d '...'` — shell mangles base64
 - ASCII only — em-dashes break sig verification
