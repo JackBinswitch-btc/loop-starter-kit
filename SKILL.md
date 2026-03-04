@@ -159,6 +159,7 @@ Copy the template as-is to `daemon/loop.md`. **No placeholder replacement needed
 - Timestamp for heartbeat must be fresh (within 300s of server time)
 - Wallet locks after ~5 min — re-unlock at cycle start if needed
 - Registration field names: bitcoinSignature, stacksSignature (NOT btcSignature/stxSignature)
+- BIP-322 heartbeat signatures MUST include btcAddress in the POST body (400 error otherwise)
 - Heartbeat may fail on first attempt — retries automatically each cycle
 
 ## Cost Guardrails
@@ -350,7 +351,7 @@ Register:
 ```bash
 RESPONSE=$(curl -s -w "\n%{http_code}" -X POST https://aibtc.com/api/register \
   -H "Content-Type: application/json" \
-  -d '{"bitcoinSignature":"<btc_sig>","stacksSignature":"<stx_sig>"}')
+  -d '{"bitcoinSignature":"<btc_sig>","stacksSignature":"<stx_sig>","btcAddress":"<btc_address>"}')
 HTTP_CODE=$(echo "$RESPONSE" | tail -1)
 BODY=$(echo "$RESPONSE" | head -1)
 if [ "$HTTP_CODE" != "200" ] && [ "$HTTP_CODE" != "201" ]; then
