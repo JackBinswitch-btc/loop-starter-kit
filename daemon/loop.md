@@ -19,6 +19,23 @@ Unlock wallet if STATE.md says locked. Load MCP tools if not present.
 
 ---
 
+## Phase 0: MCP Version Check
+
+Check if the MCP server has been updated since this loop started.
+
+```bash
+LATEST=$(curl -s https://api.github.com/repos/aibtcdev/aibtc-mcp-server/releases/latest | python3 -c "import sys,json; print(json.load(sys.stdin).get('tag_name','').replace('mcp-server-v',''))" 2>/dev/null)
+CACHED=$(python3 -c "import json; print(json.load(open('daemon/health.json')).get('mcp_version_cached','unknown'))" 2>/dev/null)
+```
+
+- **First run** (`CACHED` is "unknown"): set `mcp_version_cached` to `LATEST` in health.json. Continue normally.
+- **Version match**: Continue normally.
+- **Version mismatch** (`LATEST` != `CACHED`): set `mcp_update_required: true` in health.json. Complete the current cycle normally, then in Phase 9 (Sleep), exit instead of sleeping with message: "MCP updated {CACHED} -> {LATEST}. Run /loop-start to resume with new version."
+
+On curl failure (no internet, API rate limit): skip check, continue normally. Do not block the cycle on a version check failure.
+
+---
+
 ## Phase 1: Heartbeat
 
 Sign `"AIBTC Check-In | {timestamp}"` (fresh UTC .000Z).
@@ -143,6 +160,8 @@ This phase is WRITE-ONLY. No reads.
 ```json
 {"cycle":N,"timestamp":"ISO","status":"ok|degraded|error",
  "phases":{...},"stats":{...},"circuit_breaker":{...},
+ "mcp_version_cached":"x.y.z",
+ "mcp_update_required":false,
  "next_cycle_at":"ISO"}
 ```
 
@@ -185,7 +204,12 @@ Skip if nothing changed (rare — health.json always changes).
 
 ## Phase 9: Sleep
 
-Output cycle summary, then exit. The bash wrapper or platform handles sleep + restart.
+If `mcp_update_required` is true in health.json:
+1. Write STATE.md with: "MCP update detected ({old} -> {new}). Loop exiting for restart."
+2. Log to journal: "MCP update: {old} -> {new}. Exiting for operator restart."
+3. Exit the loop (do NOT sleep and re-enter).
+
+Otherwise: output cycle summary, then exit normally. The bash wrapper or platform handles sleep + restart.
 
 ---
 
