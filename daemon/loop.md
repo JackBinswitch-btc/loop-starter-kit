@@ -30,7 +30,7 @@ CACHED=$(python3 -c "import json; print(json.load(open('daemon/health.json')).ge
 ```
 
 - **First run** (`CACHED` is "unknown"): set `mcp_version_cached` to `LATEST` in health.json. Continue normally.
-- **Version match**: Continue normally.
+- **Version match**: Set `mcp_update_required` to `false` in health.json (clears the flag after a restart). Continue normally.
 - **Version mismatch** (`LATEST` != `CACHED`): set `mcp_update_required: true` **and** `mcp_version_cached` to `LATEST` in health.json. Complete the current cycle normally, then in Phase 9 (Sleep), exit instead of sleeping with message: "MCP update detected ({CACHED} -> {LATEST}). Exiting for restart. Run /loop-start to resume with updated version."
 
 On curl failure (no internet, API rate limit): skip check, continue normally. Do not block the cycle on a version check failure.
